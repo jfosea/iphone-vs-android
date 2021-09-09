@@ -1,0 +1,540 @@
+---
+geometry: margin=1.5cm
+output:
+  pdf_document: default
+  html_document: default
+  indent: true
+---
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE University of Calgary}\\[1.5cm] % Name of your university/college
+\textsc{\Large Experimental Design and Analysis}\\[0.5cm] % Major heading such as course name
+\textsc{\large STAT 425}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Which Phone Brand Receives Messages Faster? iPhone or Samsung?}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+Cameron \textsc{Hobbs} (30052888)\\ 
+Justin \textsc{Marquez} (30037615)\\
+Jana \textsc{Osea} (30016679)\\
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Instructor:} \\
+Prof. James \textsc{Stallard} % Supervisor's Name
+\end{flushright}
+\end{minipage}\\[2cm]
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+%\Large \emph{Author:}\\
+%John \textsc{Smith}\\[3cm] % Your name
+
+\vfill
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[2cm] % Date, change the \today to a set date if you want to be precise
+
+
+%----------------------------------------------------------------------------------------
+ % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+
+```{r, include=FALSE}
+library(ggplot2)
+library(mosaic)
+library(dplyr)
+library(EnvStats)
+library(lawstat)
+library(DescTools)
+library(gridExtra)
+library(MASS)
+library(car)
+library(ggpubr)
+setwd("C:/Users/surfacepro/Google Drive/STAT425_GROUP/project_report")
+```
+
+
+
+
+\newpage
+
+
+\begin{center} \Large\textbf{Motivation} \end{center}
+\normalsize 
+
+$\hspace{1 cm}$ This experiment will measure the time it takes to receive various messages for both the Apple iPhone 10 and the Samsung S9+, as these are two comparable phones in terms of their release date. Therefore, the population in this study consists of all individuals who currently use either an Apple iPhone 10 or a Samsung S9+ phone. 
+
+$\hspace{1 cm}$ There are three different factors that will be analyzed closely. First and foremost will be the factor that coincides precisely with the central question of this study; Of these two competing phone brands, which is the fastest or most efficient at receiving messages? This outlines the "main factor" of the study and will be labelled as the "Brand Effect" in the analysis. This main factor represents the effect that the iPhone has on the response variable, the time it takes to receive various messages, in comparison to the effect the Samsung phone has. The second factor that will be analyzed is if there is a difference in receiving messages when the given phone is connected to a Wifi network in comparison to only using cellular data. This secondary factor will be labelled the "Connection Effect" in the analysis. The impact that Wifi connection has in comparison to the Data connection may play an integral role in how a given phone receives messages. If one of the phones is slower than the other, it should be considered whether this can be credited to significant differences in the type of connection used within that phone brand. Lastly, the third factor pertains to the variety in messages a given phone can receive. This will be called the "Message Effect", which compares the time it takes to receive regular text messages, pictures, or videos. 
+
+
+$\hspace{1 cm}$ With the rapid increase in technology over the past decade, there is more of an emphasis on speed with people always looking for the fastest phones, laptops and networks. More often than in years past there are people who are impatient even with the slightest inconvenience with their phones such as a file taking an extra few seconds longer to load.  So, the main purpose of this study is to determine if there is a phone brand that receives messages faster than another brand. With this in mind, it seems most appropriate to compare the brands that are widely recognized to be the "top 2" in the cell phone industry [1], iPhone and Samsung. The objective of this study is to give iPhone and Samsung users a strong sense of how they compare against each other in terms of the speed they receive a message. In choosing these two brands, it creates a study with as large of an overall impact as possible, compared to say, conducting a study between two much less popular brands, such as Motorola and LG. 
+
+$\hspace{1 cm}$ Due to these changes in society, there should be high interest in analyzing differences between phone brands that impact a wide ranging population, especially when these differences relate to the speed a phone performs at. Note that in 2019, Samsung held 31.38% of the Global Market Share in the cell phone industry while Apple held 22.4% [1]. As expected, these were the top 2 marks when compared to any other company in the industry. Therefore, the thought process behind designing this study was to fit these interests and objectives listed above. These interests and objectives are met in the experiment because more than half of cell phone owners use iPhones or Samsung, and the receiving of messages on cell phones is one of the more obvious and integral aspects in the world of technology. People are always on their phones and so it is important for many to search for the "latest and greatest" technology to keep up to date with their families, friends, finances, sports, and other hobbies. For better or for worse, cell phones have become our most important possession due to their wide-ranging functions and their incredible ability for global interconnectedness with the touch of a finger.
+
+The statistical hypothesis that will be tested in this experiment is: 
+
+> $H_0:$ The average amount of time (in seconds) it takes to receive a message is approximately the same for an Apple iPhone 10 and a Samsung S9+. There is no "Brand Effect". \newline
+> $H_A:$ The average time it takes to receive a message is significantly different between the two phones. There is a "Brand Effect".
+
+Two tests which are secondary of importance is the statistical hypothesis: 
+
+> $H_0:$ The average amount of time it takes to receive a message is approximately the same between Wifi and Data connection within each phone brand. There is no "Connection Effect". \newline
+> $H_A:$ The average amount of time it takes to receive a message is significantly different between Wifi and Data connection within each phone brand. There is a "Connection Effect".  
+
+The other test is: 
+
+> $H_0:$ The average amount of time it takes to receive a message is approximately the same for the text message, pictures, and video within each connection. There is no "Message Effect". \newline
+> $H_A:$ The average amount of time it takes to receive a message is significantly different between the three message types within each connection. There is a "Message Effect".
+
+$\hspace{1 cm}$ Prior to the collection of the data it is unknown as to which brand of phone will be faster at receiving messages. If other experimental studies are openly available to the public, they have not been looked at prior to the implementation of this study. Furthermore, it is difficult to tell which connection type will be faster (Wifi or Data). However, one can predict that cellular data might be faster, especially if multiple users are connected to the same Wifi network. Lastly, it is almost guaranteed that regular text messages (with words and emojis) will be received faster than that of the pictures and videos. One may also predict that pictures will be faster to receive than videos since the file size of videos are usually larger than pictures. It is good to note that in this experiment, the "pictures" level incorporated into the "Message Effect" consists of thirty pictures sent in one message, whereas the "video" level only consists of one video sent at a time. This leads to more uncertainty as to which message type will be faster. Although it can be important to have a strong prediction before the data is collected in order to verify it through experiments, it can also be very useful to be uncertain about what the final results will be in an effort to learn something new in a neutral and unbiased setting.
+
+
+\newpage
+
+\begin{center} \Large\textbf{Design} \end{center}
+\normalsize 
+
+$\hspace{1 cm}$ Data will be collected through the use of Zoom Video Communications (Zoom). There will be three members on the Zoom call, one of which sends the messages, two of which receive messages. One of the two people receiving messages will have an iPhone 10 and the other will have a Samsung S9+. There will be a person next to the sender to record the time it takes for the receiver on the Zoom call to get the message. Note that there is no infringement on any human rights or any experimentation on humans in this design. The people included in this design are simply the experimenters who conduct the experiment. In the collection of data, the timer will start immediately as the sender taps their phone to deliver the message, and the timer will stop as soon as a loud notification sound is heard over the Zoom call, indicating the receiver has gotten the message. This process will be done one at a time, that is, one message is sent only to one brand of phone for each "trial". There will be 60 trials in total, 30 for each brand of phone. For each brand of phone, there will be 15 messages sent while the receiver's phone is connected to Wifi and 15 messages sent while the receiver's phone is connected to cellular data. Lastly, there will be three categories of messages sent. The first is a standard text message with approximately 150 words/emojis, the second is a collection of thirty pictures, and the third is a video approximately one minute in length. Overall, there will be a total of 5 messages sent at each combination of phone brand, connection type, and message category. A visual summary for the breakdown of this data is provided below. 
+
+
+```{r pressure, echo=FALSE, fig.cap="Design Used", out.width = '100%'}
+knitr::include_graphics("design.png")
+```
+
+The following equation will be used to model the data:
+$$ 
+X_{ijlm} = \mu + \tau_{i} + \beta_{j(i)} + \gamma_{l(ji)} + e_{ijlm}
+$$
+
+
+$$
+\begin{array}{ll}
+\tau_{i} & \text{represents the effect of the "Brand"}\:\:i, \:i = 1, 2 \\
+\beta_{j(i)} & \text{represents the effect of the "Connection"}\:\:j\:\:\text{nested within "Brand"}\:\:i, \: j = 1, 2; \:i = 1, 2 \\
+\gamma_{l(ji)} & \text{represents the effect of "Message Type"}\:\:l\:\:\text{nested within} \: \beta_{j(i)}, \:\: l = 1, 2, 3
+\end{array}
+$$
+
+
+
+$\hspace{1 cm}$ Using Zoom to collect data can lead to potential problems in a given trial if there is a lag in the video and sound. To combat this, we made sure that the amount of people using the internet is the same in both houses. In this case, both houses had a total of two people using the internet including the recipient of the messages. Additionally, human error is possible when using a timer. To diminish this effect, the best method was to ensure that the same person is timing all 60 trials. 
+
+
+
+$\hspace{1 cm}$ Careful measures were taken to ensure that every trial was subjected to the same environment, especially with regards to comparing the two phone brands. A crucial aspect in comparing the iPhone with Samsung was to choose phones that are similar in their release date to stores. The iPhone 10 was released in November, 2017 and the S9+ was released in March, 2018, which creates a fair comparison between these two brands. A second vital aspect to create a similar environment was that both phones used a Shaw Wifi network during every trial that required Wifi connection, and both phones were connected to a Virgin Mobile cellular network during the trials that required Data connection. Since the sender is using an iPhone 8 to send the messages, there is a possibility that a bias will occur with the iPhone 10. Thus, a third party application "Messenger" will be used to ensure that the messaging platform used to send the messages is neutral. Furthermore, the sender kept their phone's battery at a constant level and stayed in the same location throughout all 60 trials. A final reason the environment was the same is because everyone associated with the data collection was on the same Zoom call, so any short delay in audio would have been relatively constant across every trial.
+
+\newpage
+
+$\hspace{1 cm}$ One factor that could affect the results of the study is how the receivers of the messages were not in the same location, meaning there could be differences in how fast the networks are running. Using the "Speed Test" tool from Google [2] it was found that the Wifi speed of the iPhone message recipient was faster by 40 megabytes per second (Mbps). This may affect the average time in which a message is received between the iPhone 10 and Samsung S9+ since 15 out of the 30 trials within each phone brand uses Wifi connection. There were also a few trials when the loud notification sound did not go off even though the message was received and so it was not possible to stop the timer at the precise moment. In this situation, the trial was simply scratched and a rerun of the same trial with the same message was re-sent. This factor may have caused a slight change in the average trial times that were recorded, especially for the photo and video messages that have a higher variability in how long it takes to receive a message.
+
+
+
+
+\newpage
+
+\begin{center} \Large\textbf{Analysis} \end{center}
+\large\textbf{Diagnostics and Data Transformation}
+\normalsize 
+
+The conditions of this model is that the $e_{ijlm}$'s are normally distributed with a mean of 0 and a variance $\sigma^2_{Common}$. We will first analyze the residuals to check if they are normal. 
+
+
+
+```{r}
+proj <- read.csv('gp.csv')
+proj.aov = aov(Time ~ Brand + Brand:Connection + Brand:Connection:Message, data=proj)
+proj$e.terms <- residuals(proj.aov)
+proj$fit.terms <- residuals(proj.aov)
+ggplot(data=proj, aes(sample = e.terms)) + 
+  stat_qq(size=2, col="blue") + 
+  stat_qqline(col="red") + 
+  ggtitle("Normal Probability Plot of Residuals")
+shapiro.test(proj$e.terms)
+```
+
+From the plot above, the residuals do not appear to be normally distributed. Furthermore, the Shapiro-Wilk test gives a p-value of 0.000012 which is less than 0.05 and so we conclude that the residuals are indeed not normally distributed. Thus, it appears that we must perform a variance stabilization transformation to the response variable Time.
+
+
+\newpage
+
+We wish to discover a transformation which will produce a more normal response variable using the transformation:
+    
+$$x_{ijlm}^{'} = x_{ijlm}^{\lambda}$$ where $$ \sigma_{x_{ijlm}^{'}} \:\:\text{is proportional to}\:\: \mu^{\lambda + \text{some power} - 1} $$
+
+Furthermore, we use the relation
+
+$$ log(\sigma_{X_{ijlm}}) = log(\text{some OTHER constant}) + (\text{some constant})*log(\mu_{i})$$
+
+which means that a plot of the log of the $\sigma_{X_{ijlm}^{'}}$ to the $log(\mu_{i})$ should be a straight line. Using the R code below, we produce this plot:
+
+
+```{r}
+a <- favstats(Time ~ Brand + Brand:Connection + Brand:Connection:Message, data=proj)
+logsds = log(a$sd)
+logmeans = log(a$mean)
+logstats.df = data.frame(a$Brand, logsds, logmeans)
+```
+
+Using the method of least squares, we compute the estimate for \textbf{some OTHER constant} and \textbf{some constant}:
+    
+```{r}
+summary(lm(logsds ~ logmeans, data=logstats.df))
+```
+
+From the above, \textbf{some OTHER constant} is estimated by -1.3221  and \textbf{some constant} is estimated by 0.8406 Hence, we can find $\lambda$ below:
+
+\begin{align*}
+  \lambda &= 1 - \textbf{some constant} \\
+  &= 1 - 0.8406 \\
+  &= 0.1594 \\
+  &\approx 0.16
+\end{align*}
+
+Hence, the transformation of the original data $X_{ijlm}$ is
+
+$$X_{ijlm}^{'} = X_{ijlm}^{0.16}$$
+However, upon performing the transformation suggested above, we decided to perform multiple transformations to the closest integer root and found that the best lambda is $\lambda = 0.125$ which is the 8-th root. Thus, the final transformation we performed is as follows:
+
+$$X_{ijlm}^{'} = X_{ijlm}^{0.125}$$
+After the transformation, we analyze the residuals again and get the following.
+
+```{r}
+lambda <- 0.125
+proj$TimeT <- as.numeric(proj$Time)^lambda
+proj.aovT = aov(TimeT ~ Brand + Brand:Connection + Brand:Connection:Message, data=proj)
+proj$e.termsT <- residuals(proj.aovT)
+ggplot(data=proj, aes(sample = e.termsT)) + 
+  stat_qq(size=2, col="blue") + 
+  stat_qqline(col="red") + 
+  ggtitle("Normal Probability Plot of Residuals")
+shapiro.test(proj$e.termsT)
+```
+
+From the plot, above the transformation led to a more normal residual plot. However, from the Shapiro-Wilk test, we get a p-value of 0.02603 which is less than 0.05. After attempting to do other transformations (inverse, square-root, square, arcsin, etc.), we found that the transformation performed above is the best. Hence, throughout the rest of the analysis, we will use the transformed data from above. 
+
+
+\large\textbf{Global Hypothesis}
+\normalsize 
+
+We plan to test the existence of the following effects:
+
+\begin{enumerate}
+    \item Brand Effect
+    \item Connection Effect
+    \item Message Effect
+\end{enumerate}
+
+Also, it is good to note that since our factors are all fixed the expected means table below will be used to produce our test statistics.
+
+$$
+\begin{array}{lcc}
+\text{Source of Variation}   & \text{Expected Means Square} \\[0.5ex]
+\hline
+\text{Brand}             & E(MSA) =\sigma^{2}_{Common} + \frac{bcn_{ijl}\sum_{i=1}^{k}\tau_{i}^{2}}{k - 1} \\
+\text{Connection within Brand}        & E(MSB(A)) = \sigma^{2}_{Common} + \frac{cn_{ijl}\sum_{j=1}^{b}\beta_{j(i)}^{2}}{k(b - 1)} \\
+\text{Message within Connection (Brand)}     & E(MSC(BA)) = \sigma^{2}_{Common} + \frac{n_{ijl}\sum_{l=1}^{c}\gamma_{l(ji)}^{2}}{kb(c - 1)}\\
+\text{Error}                    & E(MSE) =\sigma^{2}_{Common}                                                   
+\end{array}
+$$
+In order to calculate for the test statistics, we want to find a ratio of expected means squares that will equal to 1 when the null hypothesis is true. Notice that, dividing by the the $E(MSE)$ will result in such a ratio. Hence, for all the test statisitcs, we will divide by $E(MSE)$.
+
+First, we will test if there is a Brand effect using the following hypothesis:
+
+$$
+\begin{array}{ll}
+{\rm H}_{0}: \tau_{iPhone} = \tau_{Samsung} = 0 & (\text{there is no Brand Effect;}\\ 
+& \text{the mean time for a message to send is the same across these two brands}) \\
+{\rm H}_{A}: {\rm H}_{0} \:\:\text{is false} & (\text{there is a Brand Effect;} \\
+& \text{the mean time for a message to send is not the same across these two brands}) \\
+\end{array}
+$$
+
+
+
+We use the following R code to produce the ANOVA table
+
+```{r}
+proj.aovT = aov(TimeT ~ Brand + Brand:Connection + Brand:Connection:Message, data=proj)
+summary(proj.aovT)
+```
+
+From which we get the following:
+
+\begin{align*}
+F_{obs} &= \frac{MSA}{MSE} = 9.894 \\
+P-value &= P(F_{1, 48} > F_{obs}) = 0.00284
+\end{align*}
+
+Based on the data, we get a p-value of 0.00284 which is less than 0.05 and so we reject the null hypothesis and conclude from these data that there is a Brand Effect. The mean time for a message to send is not the same across iPhone and Samsung. Assuming that the null hypothesis is true, the probability of observing an identically sized sample that provides stronger evidence against the null hypothesis is 0.00284.
+
+
+\newpage
+\large\textbf{Secondary Hypothesis}
+\normalsize 
+
+Second, we will test if there is a Connection effect using the following hypothesis:
+
+$$
+\begin{array}{ll}
+{\rm H}_{0}: \beta_{Wifi(i)} = \beta_{Data(i)} = 0 & (\text{there is no Connection Effect; the mean time for a message to send} \\
+&\text{within each Brand is the same across these two connection types}) \\
+{\rm H}_{A}: {\rm H}_{0} \:\:\text{is false} & (\text{there is a Connection Effect; the mean time for a message to send } \\
+&\text{within each Brand is not the same across these two connection types}) \\
+\end{array}
+$$
+From the ANOVA table above, we get that
+
+\begin{align*}
+F_{obs} &= \frac{MSB(A)}{MSE} = 0.388 \\
+P-value &= P(F_{2, 48} > F_{obs}) = 0.68061
+\end{align*}
+
+Based on the data, we get a p-value of 0.68061 which is greater than 0.05 and so we fail to reject the null hypothesis and conclude that there is no Connection Effect within each Brand. The mean time for a message to send is the same across Wifi and Data within iPhone and Samsung. Assuming that the null hypothesis is true, the probability of observing an identically sized sample that provides stronger evidence against the null hypothesis is 0.68061.
+
+\large\textbf{Tertiary Hypothesis}
+\normalsize 
+
+Finally, we will test if there is a Message effect using the following hypothesis:
+
+$$
+\begin{array}{ll}
+{\rm H}_{0}: \gamma_{Text(ji)} = \gamma_{Picture(ji)} = \gamma_{Video(ji)} = 0 & (\text{there is no Message Effect; the mean time for a message to send} \\
+&\text{within each Connection and Brand is the same across these three Message types}) \\
+{\rm H}_{A}: {\rm H}_{0} \:\:\text{is false} & (\text{there is a Message Effect; the mean time for a message to send within} \\
+&\text{ each Connection and Brand is not the same across these three Message types}) \\
+\end{array}
+$$
+From the ANOVA table above, we get that
+
+\begin{align*}
+F_{obs} &= \frac{MSC(BA)}{MSE} = 383.209 \\
+P-value &= P(F_{8, 48} > F_{obs}) \approx 0
+\end{align*}
+
+Based on the data, we get a p-value of approximately 0 which is less than 0.05 and so we reject the null hypothesis and conclude that there is a Message effect within each Connection and Brand. The mean time for a message to send is not the same across Text, Picture and Video within each Connection and Brand. Assuming that the null hypothesis is true, the probability of observing an identically sized sample that provides stronger evidence against the null hypothesis is approximately 0.
+
+From all the hypothesis testing above, we conclude that
+
+\begin{itemize}
+  \item There is a Brand Effect
+  \item There is a Message Effect within each Connection and Brand
+\end{itemize}
+
+\large\textbf{Multiple Comparison (Brand)}
+\normalsize 
+
+We will perform a Bonferroni multiple comparison method to obtain a family wise 95% confidence interval of the difference between iPhone and Samsung. It is good to note that we are performing this multiple comparison with the original, untransformed data. We do this because it is more meaningful to interpret the interval using the actual time as it more accurate compared raising it to $\lambda = 0.125$. And so we use the following formula
+
+$$(\overline{X}_{i.} - \overline{X}_{?.}) \pm (t_{1 - \frac{\alpha}{k(k-1)}, df = kbc(n_{ijl} - 1)})\sqrt{\frac{MSE}{b*c*n_{ijl}}} $$
+
+Using the R code below, we can obtain the confidence interval:
+
+```{r}
+bon.t <- qt(1 - (0.05/(2*1)), df=48)
+mse <- 62
+b <- 2
+c <- 3
+nijl <- 5
+a <- favstats(Time ~ Brand,  data=proj)
+iPhone.mean <- a$mean[1] 
+samsung.mean <- a$mean[2]
+(iPhone.mean - samsung.mean) + c(-1,1) * bon.t * sqrt(mse/(b*c*nijl))
+```
+
+From which we can summarize using the table below
+
+$$
+\begin{array}{cccc}
+\text{Lower Bound}   & \mu_{iPhone} - \mu_{Samsung}    & \text{Upper Bound}  & \text{Result} \\[0.5ex]
+\hline
+7.10           & \mu_{iPhone} - \mu_{Samsung}    & 12.88               & \mu_{iPhone} > \mu_{Samsung}   \\
+\end{array}
+$$
+And so we can conclude that
+
+$$\mu_{iPhone} > \mu_{Samsung} $$
+
+Based on the data, this means that Samsung provides faster message reception compared to iPhone. 
+
+\large\textbf{Multiple Comparison (Messages within Connection and Brand)}
+\normalsize 
+
+First will we store the means for each Message type nested in Connection nested in Brand. There are five data points at each combination, $n_{ijl} = 5$. As we did with the multiple comparison between iPhone 10 and Samsung S9+, we will use the original data in order to have an accurate representation of time.
+
+```{r}
+m <- favstats(~Time|Brand + Brand:Connection + Brand:Connection:Message, data=proj)
+```
+
+
+Since $c \leq 3$, the Bonferroni correction method is more appropriate than the Tukey's HSD method for computing the $95\%$ family of confidence intervals in a three stage nested design. Therefore, we will use the following formula to compute the confidence intervals.
+
+$$(\overline{X}_{l(ji)} - \overline{X}_{?(ji)}) \pm  t_{1 - \frac{\alpha}{c(c-1)}, df=kbc(n_{ijl} - 1)}\sqrt{\frac{MSE}{n_{ijl}}}$$
+
+```{r}
+# Common numbers for all intervals
+k <- 2
+b <- 2
+c <- 3
+nijl <- 5
+prob <- 1 - 0.05/(c*(c-1))
+df <- k*b*c*(nijl-1)
+bon.tC <- qt(prob, df)
+mseOrig <- 62
+
+# Message type nested in Data nested in Apple
+
+# Pictures - Text
+xbarPics_DA <- m$mean[1]
+xbarText_DA <- m$mean[9]
+(xbarPics_DA - xbarText_DA) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Text
+xbarVid_DA <- m$mean[17]
+(xbarVid_DA - xbarText_DA) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Pictures
+(xbarVid_DA - xbarPics_DA) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+```
+
+$$
+\begin{array}{cccc}
+      \text{Lower Bound}   & \mu_{l\text{(DataApple)}} - \mu_{?\text{(DataApple)}}  & \text{Upper Bound} & \text{Finding} \\
+      \hline
+      36.41                & \mu_{Pictures(DA)} - \mu_{Text(DA)}                    &    53.88           & \mu_{Pictures(DA)} > \mu_{Text(DA)} \\
+      78.45                & \mu_{Video(DA)} - \mu_{Text(DA)}                       &    95.92           & \mu_{Video(DA)} > \mu_{Text(DA)} \\
+      33.31                & \mu_{Video(DA)} - \mu_{Pictures(DA)}                   &    50.78           & \mu_{Video(DA)} > \mu_{Pictures(DA)} \\
+\end{array}
+$$
+
+
+```{r}
+# Message type nested in Wifi nested in Apple
+
+# Pictures - Text
+xbarPics_WA <- m$mean[27]
+xbarText_WA <- m$mean[35]
+(xbarPics_WA - xbarText_WA) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Text
+xbarVid_WA <- m$mean[43]
+(xbarVid_WA - xbarText_WA) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Pictures
+(xbarVid_WA - xbarPics_WA) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+```
+
+$$\begin{array}{cccc}
+      \text{Lower Bound}   & \mu_{l\text{(WifiApple)}} - \mu_{?\text{(WifiApple)}}  & \text{Upper Bound} & \text{Finding} \\
+      \hline
+      40.50                & \mu_{Pictures(WA)} - \mu_{Text(WA)}                    &    57.97           & \mu_{Pictures(WA)} > \mu_{Text(WA)} \\
+      70.81                & \mu_{Video(WA)} - \mu_{Text(WA)}                       &    88.28           & \mu_{Video(WA)} > \mu_{Text(WA)} \\
+      21.57                & \mu_{Video(WA)} - \mu_{Pictures(WA)}                   &    39.04           & \mu_{Video(WA)} > \mu_{Pictures(WA)} \\
+      \end{array}$$
+
+
+```{r}
+# Message type nested in Data nested in Samsung
+
+# Pictures - Text
+xbarPics_DS <- m$mean[54]
+xbarText_DS <- m$mean[62]
+(xbarPics_DS - xbarText_DS) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Text
+xbarVid_DS <- m$mean[70]
+(xbarVid_DS - xbarText_DS) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Pictures
+(xbarVid_DS - xbarPics_DS) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+```
+
+$$\begin{array}{cccc}
+      \text{Lower Bound}   & \mu_{l\text{(DataSamsung)}} - \mu_{?\text{(DataSamsung)}}  & \text{Upper Bound} & \text{Finding} \\
+      \hline
+      28.97                & \mu_{Pictures(DS)} - \mu_{Text(DS)}                        &    46.44           & \mu_{Pictures(DS)} > \mu_{Text(DS)} \\
+      55.58                & \mu_{Video(DS)} - \mu_{Text(DS)}                           &    73.05           & \mu_{Video(DS)} > \mu_{Text(DS)} \\
+      17.88                & \mu_{Video(DS)} - \mu_{Pictures(DS)}                       &    35.35           & \mu_{Video(DS)} > \mu_{Pictures(DS)} \\
+      \end{array}$$
+
+
+```{r}
+# Message type nested in Wifi nested in Samsung
+
+# Pictures - Text
+xbarPics_WS <- m$mean[80]
+xbarText_WS <- m$mean[88]
+(xbarPics_WS - xbarText_WS) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Text 
+xbarVid_WS <- m$mean[96]
+(xbarVid_WS - xbarText_WS) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+
+# Video - Pictures
+(xbarVid_WS - xbarPics_WS) + c(-1,1) * bon.tC * sqrt(mseOrig/nijl)
+```
+
+$$\begin{array}{cccc}
+      \text{Lower Bound}   & \mu_{l\text{(WifiSamsung)}} - \mu_{?\text{(WifiSamsung)}}  & \text{Upper Bound} & \text{Finding} \\
+      \hline
+      29.57                & \mu_{Pictures(WS)} - \mu_{Text(WS)}                        &    47.04           & \mu_{Pictures(WS)} > \mu_{Text(WS)} \\
+      51.28                & \mu_{Video(WS)} - \mu_{Text(WS)}                           &    68.75           & \mu_{Video(WS)} > \mu_{Text(WS)} \\
+      12.98                & \mu_{Video(WS)} - \mu_{Pictures(WS)}                       &    30.45           & \mu_{Video(WS)} > \mu_{Pictures(WS)} \\
+      \end{array}$$
+
+
+In all cases, we found that 
+
+$$\mu_{Videos(ij)} > \mu_{Picture(ij)} > \mu_{Text(ij)} $$
+
+
+\newpage
+
+
+\begin{center} \Large\textbf{Conclusion} \end{center}
+\normalsize 
+
+$\hspace{1 cm}$In conclusion, based on the data from the Three-Stage Nested Design, a Brand Effect was found. In the motivation section, we were not able to predict which phone brand will perform better. After doing the analysis it was found that, on average, the iPhone 10 takes betwen 7.10 and 12.88 seconds longer to receive a message when compared to the Samsung S9+. This was found using Bonferroni's Correction method at a 95% confidence level. Therefore, we can say from the data collected, a Samsung S9+ smartphone is faster at receiving messages than an iPhone 10.
+
+$\hspace{1 cm}$We also found that there is no Connection Effect, which means the average time for a message to be received was the same across Wifi and Data within iPhone and Samsung. This proves our initial thoughts wrong as we predicted that the Data Connection will result in shorter times when receiving messages. The result found in this study might be due to how well Wifi and Cellular Data technology has improved, causing them to perform at similar levels in terms of message reception.
+
+$\hspace{1 cm}$Lastly, there is a Message effect within each Connection and Brand and so the average time for a message to be received was not the same across Text, Picture and Video within each Connection and Brand. Specifically, the Bonferroni's multiple comparison method showed that on average, for each Connection within the iPhone 10 and  Samsung S9+, Video messages took the most time to receive, followed by Picture messages, while Text messages took the least amount of time. These results align with our earlier predictions since it is known that Text messages are smaller files compared to Videos and Pictures. 
+
+$\hspace{1 cm}$Given all of these results, if a consumer was to solely base their purchase decision on the amount of time a message is received between an iPhone 10 and a Samsung S9+, then we strongly suggest opting for a Samsung S9+. 
+
+
+
+
+\newpage
+\begin{center} \Large\textbf{References} \end{center}
+\normalsize 
+
+[1] Das, S. (2020, Feb 14). Top 10 Best Mobile Phone Brands in the World. Retrieved from http://www.mobilecellphonerepairing.com/top-10-best-mobile-phone-brands-in-the-world.html 
+
+[2] Pichai S. (2020, April 12). Google Speed Test. Retrieved from https://www.google.com/search?q=google+speed+test&oq=google+spee&aqs=chrome.1.69i57j0l7.3259j0j7&sourceid=chrome&ie=UTF-8
